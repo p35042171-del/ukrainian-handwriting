@@ -1,0 +1,424 @@
+const imageInput = document.getElementById("image");
+const preview = document.getElementById("preview");
+const output = document.getElementById("output");
+const scanBtn = document.getElementById("scanBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const learnBtn = document.getElementById("learnBtn");
+
+window.lastOCRText = "";
+
+/* ===== Slovník oprav ===== */
+
+function getDictionary() {
+    return JSON.parse(
+        localStorage.getItem("ocrDictionary") || "{}"
+    );
+}
+
+function saveDictionary(dict) {
+    localStorage.setItem(
+        "ocrDictionary",
+        JSON.stringify(dict)
+    );
+}
+
+function applyDictionary(text) {
+
+    const dict = getDictionary();
+
+    for (const wrong in dict) {
+
+        text = text.replaceAll(
+            wrong,
+            dict[wrong]
+        );
+    }
+
+    return text;
+}
+
+/* ===== Náhled obrázku ===== */
+
+imageInput.addEventListener("change", () => {
+
+    const file = imageInput.files[0];
+
+    if (!file) return;
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+});
+
+/* ===== LanguageTool ===== */
+
+async function correctText(text) {
+
+    try {
+
+        const response = await fetch(
+            "https://api.languagetool.org/v2/check",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    text: text,
+                    language: "uk"
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        let correctedText = text;
+
+        const matches =
+            result.matches.sort(
+                (a, b) => b.offset - a.offset
+            );
+
+        for (const match of matches) {
+
+            if (
+                match.replacements &&
+                match.replacements.length > 0
+            ) {
+
+                correctedText =
+                    correctedText.slice(
+                        0,
+                        match.offset
+                    ) +
+                    match.replacements[0].value +
+                    correctedText.slice(
+                        match.offset +
+                        match.length
+                    );
+            }
+        }
+
+        return correctedText;
+
+    } catch (error) {
+
+        console.error(error);
+
+        return text;
+    }
+}
+
+/* ===== OCR ===== */
+
+scanBtn.addEventListener(
+    "click",
+    async () => {
+
+        const file =
+            imageInput.files[0];
+
+        if (!file) {
+
+            alert(
+                "Vyber fotografii."
+            );
+
+            return;
+        }
+
+        try {
+
+            output.value =
+                "Příprava obrázku...";
+
+            const img =
+                new Image();
+
+            img.src =
+                URL.createObjectURL(
+                    file
+                );
+
+            await new Promise(
+                resolve => {
+                    img.onload =
+                        resolve;
+                }
+            );
+
+            const canvas =
+                document.createElement(
+                    "canvas"
+                );
+
+            const ctx =
+                canvas.getContext(
+                    "2d"
+                );
+
+            canvas.width =
+                img.width * 2;
+
+            canvas.height =
+                img.height * 2;
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            const imageData =
+                ctx.getImageData(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+            const pixels =
+                imageData.data;
+
+            for (
+                let i = 0;
+                i < pixels.length;
+                i += 4
+            ) {
+
+                const gray =
+                    (
+                        pixels[i] +
+                        pixels[i + 1] +
+                        pixels[i + 2]
+                    ) / 3;
+
+                const bw =
+                    gray > 128
+                        ? 255
+                        : 0;
+
+                pixels[i] = bw;
+                pixels[i + 1] = bw;
+                pixels[i + 2] = bw;
+            }
+
+            ctx.putImageData(
+                imageData,
+                0,
+                0
+            );
+
+            output.value =
+                "Rozpoznávání textu...";
+
+            const {
+                data: ocrData
+            } =
+                await Tesseract
+                    .recognize(
+                        canvas,
+                        "ukr",
+                        {
+                            logger:
+                                m => {
+
+                                    if (
+                                        m.status ===
+                                        "recognizing text"
+                                    ) {
+
+                                        output.value =
+                                            `Rozpoznávání: ${Math.round(
+                                                m.progress *
+                                                100
+                                            )}%`;
+                                    }
+                                }
+                        }
+                    );
+
+            window.lastOCRText =
+                ocrData.text;
+
+            let text =
+                applyDictionary(
+                    ocrData.text
+                );
+
+            output.value =
+                "Kontrola pravopisu...";
+
+            text =
+                await correctText(
+                    text
+                );
+
+            text = text
+                .replaceAll(
+                    "I",
+                    "І"
+                )
+                .replaceAll(
+                    "l",
+                    "І"
+                );
+
+            output.value =
+                text;
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            output.value =
+                "Chyba při rozpoznávání.";
+
+            alert(
+                "OCR selhalo."
+            );
+        }
+    }
+);
+
+/* ===== Učení ===== */
+
+learnBtn.addEventListener(
+    "click",
+    () => {
+
+        const original =
+            window.lastOCRText;
+
+        const corrected =
+            output.value;
+
+        if (
+            !original ||
+            !corrected
+        ) {
+
+            alert(
+                "Nejdříve proveď OCR."
+            );
+
+            return;
+        }
+
+        const originalWords =
+            original.split(
+                /\s+/
+            );
+
+        const correctedWords =
+            corrected.split(
+                /\s+/
+            );
+
+        const dict =
+            getDictionary();
+
+        for (
+            let i = 0;
+            i <
+            Math.min(
+                originalWords.length,
+                correctedWords.length
+            );
+            i++
+        ) {
+
+            if (
+                originalWords[i] !==
+                correctedWords[i]
+            ) {
+
+                dict[
+                    originalWords[i]
+                ] =
+                    correctedWords[i];
+            }
+        }
+
+        saveDictionary(
+            dict
+        );
+
+        alert(
+            "Opravy byly uloženy."
+        );
+    }
+);
+
+/* ===== Word ===== */
+
+downloadBtn.addEventListener(
+    "click",
+    () => {
+
+        const text =
+            output.value.trim();
+
+        if (!text) {
+
+            alert(
+                "Není co stáhnout."
+            );
+
+            return;
+        }
+
+        const html = `
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<pre style="font-family:Calibri;font-size:12pt;">
+${text}
+</pre>
+</body>
+</html>
+`;
+
+        const blob =
+            new Blob(
+                [
+                    '\ufeff',
+                    html
+                ],
+                {
+                    type:
+                        "application/msword"
+                }
+            );
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+        link.href =
+            URL.createObjectURL(
+                blob
+            );
+
+        link.download =
+            "PrepisTextu.doc";
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+
+        document.body.removeChild(
+            link
+        );
+    }
+);
