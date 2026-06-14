@@ -4,11 +4,7 @@ const output = document.getElementById("output");
 const scanBtn = document.getElementById("scanBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const learnBtn = document.getElementById("learnBtn");
-const original =
-    window.lastOCRText;
 
-const corrected =
-    output.value;
 
 /* ===== Slovník oprav ===== */
 
@@ -136,84 +132,6 @@ scanBtn.addEventListener(
             output.value =
                 "Příprava obrázku...";
 
-            const img =
-                new Image();
-
-            img.src =
-                URL.createObjectURL(
-                    file
-                );
-
-            await new Promise(
-                resolve => {
-                    img.onload =
-                        resolve;
-                }
-            );
-
-            const canvas =
-                document.createElement(
-                    "canvas"
-                );
-
-            const ctx =
-                canvas.getContext(
-                    "2d"
-                );
-
-            canvas.width =
-                img.width * 2;
-
-            canvas.height =
-                img.height * 2;
-
-            ctx.drawImage(
-                img,
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-            const imageData =
-                ctx.getImageData(
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
-
-            const pixels =
-                imageData.data;
-
-            for (
-                let i = 0;
-                i < pixels.length;
-                i += 4
-            ) {
-
-                const gray =
-                    (
-                        pixels[i] +
-                        pixels[i + 1] +
-                        pixels[i + 2]
-                    ) / 3;
-
-                const bw =
-                    gray > 128
-                        ? 255
-                        : 0;
-
-                pixels[i] = bw;
-                pixels[i + 1] = bw;
-                pixels[i + 2] = bw;
-            }
-
-            ctx.putImageData(
-                imageData,
-                0,
-                0
-            );
 
             output.value =
                 "Rozpoznávání textu...";
@@ -241,13 +159,6 @@ const response =
 const data =
     await response.json();
 
-window.lastOCRText =
-    data.text;
-
-let text =
-    applyDictionary(
-        data.text
-    );
 
 output.value =
     "Kontrola pravopisu...";
@@ -263,8 +174,6 @@ text = text
 
 output.value =
     text;
-            window.lastOCRText =
-                ocrData.text;
 
 
             output.value =
@@ -309,6 +218,11 @@ output.value =
 learnBtn.addEventListener(
     "click",
     () => {
+            const original =
+        window.lastOCRText;
+
+    const corrected =
+        output.value;
 
 
         const corrected =
