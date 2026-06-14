@@ -1,3 +1,5 @@
+document.addEventListener("DOMContentLoaded", () => {
+
 const imageInput = document.getElementById("image");
 const preview = document.getElementById("preview");
 const output = document.getElementById("output");
@@ -5,32 +7,24 @@ const scanBtn = document.getElementById("scanBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const learnBtn = document.getElementById("learnBtn");
 
-
 /* ===== Slovník oprav ===== */
 
 function getDictionary() {
-    return JSON.parse(
-        localStorage.getItem("ocrDictionary") || "{}"
-    );
+    return JSON.parse(localStorage.getItem("ocrDictionary") || "{}");
 }
 
 function saveDictionary(dict) {
-    localStorage.setItem(
-        "ocrDictionary",
-        JSON.stringify(dict)
-    );
+    localStorage.setItem("ocrDictionary", JSON.stringify(dict));
 }
 
 function applyDictionary(text) {
+    if (!text) return "";
 
     const dict = getDictionary();
 
     for (const wrong in dict) {
-
-        text = text.replaceAll(
-            wrong,
-            dict[wrong]
-        );
+        const safe = new RegExp(`\\b${wrong}\\b`, "g");
+        text = text.replace(safe, dict[wrong]);
     }
 
     return text;
@@ -38,34 +32,28 @@ function applyDictionary(text) {
 
 /* ===== Náhled obrázku ===== */
 
-imageInput.addEventListener("change", () => {
-
-    const file = imageInput.files[0];
-
+imageInput?.addEventListener("change", () => {
+    const file = imageInput.files?.[0];
     if (!file) return;
 
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
-
 });
 
 /* ===== LanguageTool ===== */
 
 async function correctText(text) {
-
     try {
-
         const response = await fetch(
             "https://api.languagetool.org/v2/check",
             {
                 method: "POST",
                 headers: {
-                    "Content-Type":
-                        "application/x-www-form-urlencoded"
+                    "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: new URLSearchParams({
-                    text: text,
-                    language: "uk"
+                    text,
+                    language: "cs"
                 })
             }
         );
@@ -74,246 +62,133 @@ async function correctText(text) {
 
         let correctedText = text;
 
-        const matches =
-            result.matches.sort(
-                (a, b) => b.offset - a.offset
-            );
+        const matches = (result.matches || []).sort(
+            (a, b) => b.offset - a.offset
+        );
 
         for (const match of matches) {
-
-            if (
-                match.replacements &&
-                match.replacements.length > 0
-            ) {
-
+            if (match.replacements?.length) {
                 correctedText =
-                    correctedText.slice(
-                        0,
-                        match.offset
-                    ) +
+                    correctedText.slice(0, match.offset) +
                     match.replacements[0].value +
-                    correctedText.slice(
-                        match.offset +
-                        match.length
-                    );
+                    correctedText.slice(match.offset + match.length);
             }
         }
 
         return correctedText;
 
     } catch (error) {
-
-        console.error(error);
-
+        console.error("LanguageTool error:", error);
         return text;
     }
 }
 
 /* ===== OCR ===== */
 
-scanBtn.addEventListener(
-    "click",
-    async () => {
+scanBtn?.addEventListener("click", async () => {
 
-        const file =
-            imageInput.files[0];
+    const file = imageInput?.files?.[0];
 
-        if (!file) {
-
-            alert(
-                "Vyber fotografii."
-            );
-
-            return;
-        }
-
-        try {
-
-            output.value =
-                "Příprava obrázku...";
-
-
-            output.value =
-                "Rozpoznávání textu...";
-
-           output.value =
-    "Nahrávám obrázek...";
-
-const formData =
-    new FormData();
-
-formData.append(
-    "image",
-    file
-);
-
-const response =
-    await fetch(
-        "https://onerended.onrender.com/ocr",
-        {
-            method: "POST",
-            body: formData
-        }
-    );
-
-const data =
-    await response.json();
-
-            if (!response.ok) {
-    throw new Error(
-        data.error || "Server error"
-    );
-}
-
-if (!data.text) {
-    throw new Error(
-        "Server nevrátil žádný text."
-    );
-}
-
-let text =
-    data.text;
-
-window.lastOCRText =
-    text;
-
-text =
-    applyDictionary(text);
-
-output.value =
-    "Kontrola pravopisu...";
-
-text =
-    await correctText(text);
-
-text = text
-    .replaceAll("I", "І")
-    .replaceAll("l", "І");
-
-output.value =
-    text;
-
-text = text
-    .replaceAll("I", "І")
-    .replaceAll("l", "І");
-
-output.value =
-    text;
-
-
-
-            output.value =
-                text;
-
-        } catch (error) {
-
-            console.error(
-                error
-            );
-
-            output.value =
-                "Chyba při rozpoznávání.";
-
-            alert(
-                "OCR selhalo."
-            );
-        }
+    if (!file) {
+        alert("Vyber fotografii.");
+        return;
     }
-);
+
+    try {
+
+        output.value = "Nahrávám obrázek...";
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const response = await fetch(
+            "https://onerended.onrender.com/ocr",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data?.error || "Server error");
+        }
+
+        if (!data?.text) {
+            throw new Error("Server nevrátil žádný text.");
+        }
+
+        let text = data.text;
+
+        window.lastOCRText = text;
+
+        output.value = "Opravy slovníku...";
+
+        text = applyDictionary(text);
+
+        output.value = "Kontrola pravopisu...";
+
+        text = await correctText(text);
+
+        text = text
+            .replaceAll("I", "І")
+            .replaceAll("l", "І");
+
+        output.value = text;
+
+    } catch (error) {
+        console.error("OCR error:", error);
+        output.value = "Chyba při rozpoznávání.";
+        alert(error.message || "OCR selhalo.");
+    }
+});
 
 /* ===== Učení ===== */
 
-learnBtn.addEventListener(
-    "click",
-    () => {
-            const original =
-        window.lastOCRText;
+learnBtn?.addEventListener("click", () => {
 
-    const corrected =
-        output.value;
+    const original = window.lastOCRText;
+    const corrected = output.value;
 
-
-
-        if (
-            !original ||
-            !corrected
-        ) {
-
-            alert(
-                "Nejdříve proveď OCR."
-            );
-
-            return;
-        }
-
-        const originalWords =
-            original.split(
-                /\s+/
-            );
-
-        const correctedWords =
-            corrected.split(
-                /\s+/
-            );
-
-        const dict =
-            getDictionary();
-
-        for (
-            let i = 0;
-            i <
-            Math.min(
-                originalWords.length,
-                correctedWords.length
-            );
-            i++
-        ) {
-
-            if (
-                originalWords[i] !==
-                correctedWords[i]
-            ) {
-
-                dict[
-                    originalWords[i]
-                ] =
-                    correctedWords[i];
-            }
-        }
-
-        saveDictionary(
-            dict
-        );
-
-        alert(
-            "Opravy byly uloženy."
-        );
+    if (!original || !corrected) {
+        alert("Nejdříve proveď OCR.");
+        return;
     }
-);
 
-/* ===== Word ===== */
+    const normalize = (t) =>
+        t.toLowerCase().replace(/[.,!?]/g, "");
 
-downloadBtn.addEventListener(
-    "click",
-    () => {
+    const originalWords = normalize(original).split(/\s+/);
+    const correctedWords = normalize(corrected).split(/\s+/);
 
-        const text =
-            output.value.trim();
+    const dict = getDictionary();
 
-        if (!text) {
-
-            alert(
-                "Není co stáhnout."
-            );
-
-            return;
+    for (let i = 0; i < Math.min(originalWords.length, correctedWords.length); i++) {
+        if (originalWords[i] !== correctedWords[i]) {
+            dict[originalWords[i]] = correctedWords[i];
         }
+    }
 
-        const html = `
+    saveDictionary(dict);
+
+    alert("Opravy byly uloženy.");
+});
+
+/* ===== Word export ===== */
+
+downloadBtn?.addEventListener("click", () => {
+
+    const text = output.value?.trim();
+
+    if (!text) {
+        alert("Není co stáhnout.");
+        return;
+    }
+
+    const html = `
 <html>
-<head>
-<meta charset="UTF-8">
-</head>
+<head><meta charset="UTF-8"></head>
 <body>
 <pre style="font-family:Calibri;font-size:12pt;">
 ${text}
@@ -322,39 +197,17 @@ ${text}
 </html>
 `;
 
-        const blob =
-            new Blob(
-                [
-                    '\ufeff',
-                    html
-                ],
-                {
-                    type:
-                        "application/msword"
-                }
-            );
+    const blob = new Blob(['\ufeff' + html], {
+        type: "application/msword"
+    });
 
-        const link =
-            document.createElement(
-                "a"
-            );
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "PrepisTextu.doc";
 
-        link.href =
-            URL.createObjectURL(
-                blob
-            );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
 
-        link.download =
-            "PrepisTextu.doc";
-
-        document.body.appendChild(
-            link
-        );
-
-        link.click();
-
-        document.body.removeChild(
-            link
-        );
-    }
-);
+});
