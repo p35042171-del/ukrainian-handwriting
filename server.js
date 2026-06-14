@@ -15,6 +15,11 @@ const upload = multer({
     dest: "uploads/"
 });
 
+console.log(
+    "API key loaded:",
+    !!process.env.GEMINI_API_KEY
+);
+
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
