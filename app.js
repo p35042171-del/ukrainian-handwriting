@@ -133,9 +133,6 @@ scanBtn.addEventListener(
                 "Příprava obrázku...";
 
 
-            output.value =
-                "Rozpoznávání textu...";
-
            output.value =
     "Nahrávám obrázek...";
 
@@ -190,15 +187,6 @@ text = text
     .replaceAll("I", "І")
     .replaceAll("l", "І");
 
-output.value =
-    text;
-
-text = text
-    .replaceAll("I", "І")
-    .replaceAll("l", "І");
-
-output.value =
-    text;
 
 
 
