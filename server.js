@@ -20,11 +20,22 @@ const ai = new GoogleGenAI({
 });
 
 app.post(
+
+    app.get("/", (req, res) => {
+    res.send("OCR server běží");
+});
+
     "/ocr",
     upload.single("image"),
     async (req, res) => {
 
         try {
+
+            if (!req.file) {
+    return res.status(400).json({
+        error: "Nebyl nahrán žádný obrázek"
+    });
+}
 
             const buffer =
                 fs.readFileSync(
