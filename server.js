@@ -2,67 +2,93 @@ import express from "express";
 import multer from "multer";
 import cors from "cors";
 import dotenv from "dotenv";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import fs from "fs";
 
 dotenv.config();
 
 const app = express();
+
 app.use(cors());
 
-const upload = multer({ dest: "uploads/" });
-
-// ✔ STARÝ STABILNÍ GEMINI SDK
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash"
+const upload = multer({
+    dest: "uploads/"
 });
 
-app.post("/ocr", upload.single("image"), async (req, res) => {
+console.log(
+    "API key loaded:",
+    !!process.env.GEMINI_API_KEY
+);
 
-    try {
+const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY
+});
 
-        if (!req.file) {
-            return res.status(400).json({ error: "No file" });
+app.post(
+    "/ocr",
+    upload.single("image"),
+    async (req, res) => {
+
+        try {
+
+            const buffer =
+                fs.readFileSync(
+                    req.file.path
+                );
+
+            const imagePart = {
+                inlineData: {
+                    data:
+                        buffer.toString(
+                            "base64"
+                        ),
+                    mimeType:
+                        req.file.mimetype
+                }
+            };
+
+            const response =
+                await ai.models.generateContent({
+                    model:
+                        "gemini-2.5-flash",
+                    contents: [
+                        imagePart,
+                        `
+ПЕРЕПИШИ текст з фотографії.
+
+Правила:
+- текст українською мовою
+- збережи абзаци
+- виправ очевидні OCR помилки
+- поверни тільки текст
+`
+                    ]
+                });
+
+            fs.unlinkSync(
+                req.file.path
+            );
+
+            res.json({
+                text:
+                    response.text
+            });
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            res.status(500)
+                .json({
+                    error:
+                        "OCR failed"
+                });
         }
-
-        const buffer = fs.readFileSync(req.file.path);
-
-        const imagePart = {
-            inlineData: {
-                data: buffer.toString("base64"),
-                mimeType: req.file.mimetype
-            }
-        };
-
-        const result = await model.generateContent([
-            imagePart,
-            "Extract text from this image. Return only text."
-        ]);
-
-        const response = await result.response;
-
-        res.json({
-            text: response.text()
-        });
-
-   catch (error) {
-    console.error("🔥 OCR BACKEND ERROR:");
-    console.error(error);
-    console.error(error?.stack);
-
-    return res.status(500).json({
-        error: error?.message,
-        stack: error?.stack
-    });
-}
-
-    } finally {
-        if (req.file?.path) fs.unlink(req.file.path, () => {});
     }
-});
+);
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log("OCR server running");
-});
+app.listen(
+    process.env.PORT || 3000
+);
