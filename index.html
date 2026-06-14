@@ -1,93 +1,38 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="cs">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Přepis rukopisu</title>
 
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Перепис рукопису
-    </title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
 
-    <div class="hero">
+    <h1>Přepis rukopisu do Wordu</h1>
 
-        <h1>
-            📝 Перепис рукопису
-        </h1>
+    <input type="file" id="image" accept="image/*">
 
-        <p class="subtitle">
-            Завантажте фотографію рукописного тексту
-        </p>
+    <img id="preview">
 
-    </div>
+    <button id="scanBtn">
+        Rozpoznat text
+    </button>
 
-    <label
-        for="image"
-        class="upload-box"
-    >
+    <textarea id="output"></textarea>
 
-        <div class="upload-icon">
-            📷
-        </div>
+<button id="learnBtn">
+    Uložit opravy
+</button>
 
-        <div class="upload-title">
-            Вибрати фотографію
-        </div>
-
-        <div class="upload-subtitle">
-            Натисніть або перетягніть зображення
-        </div>
-
-    </label>
-
-    <input
-        type="file"
-        id="image"
-        accept="image/*"
-        hidden
-    >
-
-    <img
-        id="preview"
-        alt="Preview"
-    >
-
-    <textarea
-        id="output"
-        placeholder="Тут з'явиться розпізнаний текст..."
-    ></textarea>
-
-    <div class="buttons">
-
-        <button id="scanBtn">
-            ✨ Розпізнати текст
-        </button>
-
-        <button id="learnBtn">
-            🧠 Зберегти виправлення
-        </button>
-
-        <button id="downloadBtn">
-            📄 Завантажити Word
-        </button>
-
-    </div>
+    <button id="downloadBtn">
+        Stáhnout Word
+    </button>
 
 </div>
+
 
 <script src="app.js"></script>
 
