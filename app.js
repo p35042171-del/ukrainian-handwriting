@@ -132,14 +132,44 @@ async function correctText(text) {
 
 /* ===== OCR ===== */
 
-scanBtn.addEventListener(
-    "click",
-    async () => {
+scanBtn.addEventListener("click", async () => {
+    const file = imageInput.files[0];
+    if (!file) {
+        alert("Nejprve vyberte obrázek.");
+        return;
+    }
 
-        const file =
-            imageInput.files[0];
+    scanBtn.textContent = "Rozpoznávám text...";
+    scanBtn.disabled = true;
 
-        if (!file) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+        // Posíláme obrázek na tvůj Node.js backend
+        const response = await fetch("http://localhost:3000/ocr", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) throw new Error("Server vrátil chybu");
+
+        const data = await response.json();
+        
+        // Aplikujeme slovník naučených oprav
+        const finalText = applyDictionary(data.text);
+        
+        output.value = finalText;
+        window.lastOCRText = data.text; // Uložíme originál pro učení
+
+    } catch (error) {
+        console.error(error);
+        alert("Chyba při komunikaci se serverem.");
+    } finally {
+        scanBtn.textContent = "розпізнати текст";
+        scanBtn.disabled = false;
+    }
+});
 
             alert(
                 "Vyber fotografii."
