@@ -149,7 +149,7 @@ formData.append(
 
 const response =
     await fetch(
-        "https://p35042171-del.github.io/ukrainian-handwriting/",
+        "https://onerended.onrender.com/ocr",
         {
             method: "POST",
             body: formData
