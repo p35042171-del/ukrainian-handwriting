@@ -1,52 +1,96 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Přepis rukopisu</title>
 
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Перепис рукопису
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 <body>
 
 <div class="container">
 
-    <h1>Перепис рукопису</h1>
+    <div class="hero">
 
-   <label for="image" class="upload-box">
-    <div class="upload-title">
-        Виберіть зображення
+        <h1>
+            📝 Перепис рукопису
+        </h1>
+
+        <p class="subtitle">
+            Завантажте фотографію рукописного тексту
+        </p>
+
     </div>
-    <div class="upload-subtitle">
-        Натисніть або перетягніть зображення сюди
+
+    <label
+        for="image"
+        class="upload-box"
+    >
+
+        <div class="upload-icon">
+            📷
+        </div>
+
+        <div class="upload-title">
+            Вибрати фотографію
+        </div>
+
+        <div class="upload-subtitle">
+            Натисніть або перетягніть зображення
+        </div>
+
+    </label>
+
+    <input
+        type="file"
+        id="image"
+        accept="image/*"
+        hidden
+    >
+
+    <img
+        id="preview"
+        alt="Preview"
+    >
+
+    <textarea
+        id="output"
+        placeholder="Тут з'явиться розпізнаний текст..."
+    ></textarea>
+
+    <div class="buttons">
+
+        <button id="scanBtn">
+            ✨ Розпізнати текст
+        </button>
+
+        <button id="learnBtn">
+            🧠 Зберегти виправлення
+        </button>
+
+        <button id="downloadBtn">
+            📄 Завантажити Word
+        </button>
+
     </div>
-</label>
 
-<input
-    type="file"
-    id="image"
-    accept="image/*"
-    hidden
->
+</div>
 
-    <img id="preview">
+<script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
 
-    <button id="scanBtn">
-        розпізнати текст
-    </button>
-
-    <textarea id="output"></textarea>
-
-<button id="learnBtn">
-    запам'ятати текст
-</button>
-
-    <button id="downloadBtn">
-        завантажити як Word
-    </button>
-
-
-<script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>  
 <script src="app.js"></script>
 
 </body>
