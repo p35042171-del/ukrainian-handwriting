@@ -190,6 +190,16 @@ text = text
     .replaceAll("I", "І")
     .replaceAll("l", "І");
 
+output.value =
+    text;
+
+text = text
+    .replaceAll("I", "І")
+    .replaceAll("l", "І");
+
+output.value =
+    text;
+
 
 
             output.value =
