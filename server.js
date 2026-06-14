@@ -47,9 +47,16 @@ app.post("/ocr", upload.single("image"), async (req, res) => {
             text: response.text()
         });
 
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "OCR failed" });
+   catch (error) {
+    console.error("🔥 OCR BACKEND ERROR:");
+    console.error(error);
+    console.error(error?.stack);
+
+    return res.status(500).json({
+        error: error?.message,
+        stack: error?.stack
+    });
+}
 
     } finally {
         if (req.file?.path) fs.unlink(req.file.path, () => {});
