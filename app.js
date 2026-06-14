@@ -4,8 +4,11 @@ const output = document.getElementById("output");
 const scanBtn = document.getElementById("scanBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const learnBtn = document.getElementById("learnBtn");
+const original =
+    window.lastOCRText;
 
-window.lastOCRText = "";
+const corrected =
+    output.value;
 
 /* ===== Slovník oprav ===== */
 
@@ -228,7 +231,7 @@ formData.append(
 
 const response =
     await fetch(
-        "https://TVUJ-RENDER-URL.onrender.com/ocr",
+        "https://p35042171-del.github.io/ukrainian-handwriting/",
         {
             method: "POST",
             body: formData
