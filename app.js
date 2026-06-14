@@ -57,18 +57,6 @@ function applyDictionary(text) {
     return text;
 }
 
-/* ===== Náhled obrázku ===== */
-
-imageInput.addEventListener("change", () => {
-
-    const file = imageInput.files[0];
-
-    if (!file) return;
-
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-
-});
 
 /* ===== LanguageTool ===== */
 
