@@ -263,10 +263,6 @@ output.value =
             window.lastOCRText =
                 ocrData.text;
 
-            let text =
-                applyDictionary(
-                    ocrData.text
-                );
 
             output.value =
                 "Kontrola pravopisu...";
