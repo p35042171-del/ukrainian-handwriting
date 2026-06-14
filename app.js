@@ -159,6 +159,18 @@ const response =
 const data =
     await response.json();
 
+            if (!response.ok) {
+    throw new Error(
+        data.error || "Server error"
+    );
+}
+
+if (!data.text) {
+    throw new Error(
+        "Server nevrátil žádný text."
+    );
+}
+
 let text =
     data.text;
 
