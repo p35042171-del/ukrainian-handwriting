@@ -11,44 +11,29 @@
 
 <div class="container">
 
-    <h1>Перепис рукопису</h1>
+    <h1>Přepis rukopisu do Wordu</h1>
 
-   <label for="image" class="upload-box">
-    <div class="upload-title">
-        Виберіть зображення
-    </div>
-    <div class="upload-subtitle">
-        Натисніть або перетягніть зображення сюди
-    </div>
-</label>
-
-<input
-    type="file"
-    id="image"
-    accept="image/*"
-    hidden
->
+    <input type="file" id="image" accept="image/*">
 
     <img id="preview">
 
     <button id="scanBtn">
-        розпізнати текст
+        Rozpoznat text
     </button>
 
     <textarea id="output"></textarea>
 
 <button id="learnBtn">
-    запам'ятати текст
+    Uložit opravy
 </button>
 
     <button id="downloadBtn">
-        завантажити як Word
+        Stáhnout Word
     </button>
 
 </div>
 
 
-<script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>  
 <script src="app.js"></script>
 
 </body>
