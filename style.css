@@ -1,280 +1,32 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
 body{
-    font-family:Inter,Segoe UI,sans-serif;
-
-    min-height:100vh;
-
-    background:
-        radial-gradient(circle at top left,#2563eb 0%,transparent 35%),
-        radial-gradient(circle at bottom right,#7c3aed 0%,transparent 35%),
-        #0f172a;
-
-    padding:30px;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    font-family:Arial;
+    background:#f3f4f6;
+    padding:40px;
 }
 
 .container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+}
+
+img{
     width:100%;
-    max-width:1100px;
-
-    background:rgba(255,255,255,.08);
-
-    backdrop-filter:blur(25px);
-    -webkit-backdrop-filter:blur(25px);
-
-    border:1px solid rgba(255,255,255,.12);
-
-    border-radius:30px;
-
-    padding:40px;
-
-    box-shadow:
-        0 25px 60px rgba(0,0,0,.4);
-}
-
-/* ===== HLAVIČKA ===== */
-
-.hero{
-    text-align:center;
-    margin-bottom:35px;
-}
-
-.hero h1{
-    color:white;
-    font-size:52px;
-    font-weight:800;
-    margin-bottom:10px;
-}
-
-.subtitle{
-    color:#94a3b8;
-    font-size:18px;
-}
-
-/* ===== UPLOAD ===== */
-
-.upload-box{
-    width:100%;
-    min-height:220px;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-
-    border:2px dashed rgba(255,255,255,.15);
-
-    border-radius:25px;
-
-    background:rgba(255,255,255,.03);
-
-    cursor:pointer;
-
-    transition:.3s;
-
-    margin-bottom:25px;
-}
-
-.upload-box:hover{
-    border-color:#3b82f6;
-    background:rgba(59,130,246,.08);
-    transform:translateY(-3px);
-}
-
-.upload-icon{
-    font-size:64px;
-    margin-bottom:15px;
-}
-
-.upload-title{
-    color:white;
-    font-size:24px;
-    font-weight:700;
-}
-
-.upload-subtitle{
-    color:#94a3b8;
-    margin-top:8px;
-    font-size:15px;
-}
-
-/* ===== NÁHLED OBRÁZKU ===== */
-
-#preview{
-    width:100%;
-    max-height:600px;
-
+    max-height:500px;
     object-fit:contain;
-
-    border-radius:20px;
-
-    margin-bottom:25px;
-
-    display:none;
-
-    border:1px solid rgba(255,255,255,.1);
-
-    background:rgba(255,255,255,.03);
+    margin-top:15px;
 }
-
-/* ===== TEXT ===== */
 
 textarea{
     width:100%;
-    min-height:400px;
-
-    background:rgba(255,255,255,.05);
-
-    color:white;
-
-    border:1px solid rgba(255,255,255,.12);
-
-    border-radius:20px;
-
-    padding:22px;
-
-    font-size:17px;
-
-    line-height:1.7;
-
-    resize:vertical;
-
-    outline:none;
-
-    transition:.25s;
-
-    margin-bottom:25px;
-}
-
-textarea:focus{
-    border-color:#3b82f6;
-}
-
-textarea::placeholder{
-    color:#94a3b8;
-}
-
-/* ===== TLAČÍTKA ===== */
-
-.buttons{
-    display:flex;
-    gap:15px;
-    flex-wrap:wrap;
+    height:300px;
+    margin-top:20px;
 }
 
 button{
-    flex:1;
-
-    min-width:220px;
-
-    padding:18px;
-
-    border:none;
-
-    border-radius:18px;
-
-    font-size:17px;
-
-    font-weight:700;
-
+    margin-top:15px;
+    padding:12px 20px;
     cursor:pointer;
-
-    transition:.25s;
-
-    color:white;
-}
-
-button:hover{
-    transform:translateY(-3px);
-}
-
-button:active{
-    transform:translateY(0);
-}
-
-#scanBtn{
-    background:
-        linear-gradient(
-            135deg,
-            #2563eb,
-            #3b82f6
-        );
-}
-
-#learnBtn{
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #8b5cf6
-        );
-}
-
-#downloadBtn{
-    background:
-        linear-gradient(
-            135deg,
-            #10b981,
-            #34d399
-        );
-}
-
-/* ===== SCROLLBAR ===== */
-
-::-webkit-scrollbar{
-    width:10px;
-}
-
-::-webkit-scrollbar-track{
-    background:#111827;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#334155;
-    border-radius:20px;
-}
-
-::-webkit-scrollbar-thumb:hover{
-    background:#475569;
-}
-
-/* ===== MOBIL ===== */
-
-@media(max-width:768px){
-
-    body{
-        padding:15px;
-    }
-
-    .container{
-        padding:25px;
-    }
-
-    .hero h1{
-        font-size:34px;
-    }
-
-    .upload-icon{
-        font-size:48px;
-    }
-
-    .upload-title{
-        font-size:20px;
-    }
-
-    button{
-        min-width:100%;
-    }
-
-    textarea{
-        min-height:300px;
-    }
 }
