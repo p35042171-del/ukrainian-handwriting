@@ -175,9 +175,6 @@ scanBtn.addEventListener("click", async () => {
                 "Vyber fotografii."
             );
 
-            return;
-        }
-
         try {
 
             output.value =
