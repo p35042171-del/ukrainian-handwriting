@@ -74,16 +74,17 @@ app.post(
                     response.text
             });
 
-      } catch (error) {
+        } catch (error) {
 
-    console.error("FULL SERVER ERROR:");
-    console.error(error);
+            console.error("FULL SERVER ERROR:");
+            console.error(error);
 
-    res.status(500).json({
-        error: error.message,
-        details: String(error)
-    });
-}
+            res.status(500).json({
+                error: error?.message || "Unknown error",
+                details: String(error)
+            });
+        }
+    }
 );
 
 app.listen(
