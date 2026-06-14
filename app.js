@@ -159,14 +159,27 @@ const response =
 const data =
     await response.json();
 
+let text =
+    data.text;
+
+window.lastOCRText =
+    text;
+
+text =
+    applyDictionary(text);
 
 output.value =
     "Kontrola pravopisu...";
 
 text =
-    await correctText(
-        text
-    );
+    await correctText(text);
+
+text = text
+    .replaceAll("I", "І")
+    .replaceAll("l", "І");
+
+output.value =
+    text;
 
 text = text
     .replaceAll("I", "І")
@@ -176,23 +189,6 @@ output.value =
     text;
 
 
-            output.value =
-                "Kontrola pravopisu...";
-
-            text =
-                await correctText(
-                    text
-                );
-
-            text = text
-                .replaceAll(
-                    "I",
-                    "І"
-                )
-                .replaceAll(
-                    "l",
-                    "І"
-                );
 
             output.value =
                 text;
