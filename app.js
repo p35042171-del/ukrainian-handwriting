@@ -5,6 +5,27 @@ const scanBtn = document.getElementById("scanBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const learnBtn = document.getElementById("learnBtn");
 
+window.lastOCRText = "";
+
+
+imageInput.addEventListener("change", () => {
+
+    const file = imageInput.files[0];
+
+    if (!file) return;
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+    document.querySelector(
+        ".upload-title"
+    ).textContent = file.name;
+
+    document.querySelector(
+        ".upload-subtitle"
+    ).textContent =
+        `${Math.round(file.size / 1024)} KB`;
+});
 
 /* ===== Slovník oprav ===== */
 
@@ -132,75 +153,139 @@ scanBtn.addEventListener(
             output.value =
                 "Příprava obrázku...";
 
+            const img =
+                new Image();
+
+            img.src =
+                URL.createObjectURL(
+                    file
+                );
+
+            await new Promise(
+                resolve => {
+                    img.onload =
+                        resolve;
+                }
+            );
+
+            const canvas =
+                document.createElement(
+                    "canvas"
+                );
+
+            const ctx =
+                canvas.getContext(
+                    "2d"
+                );
+
+            canvas.width =
+                img.width * 2;
+
+            canvas.height =
+                img.height * 2;
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            const imageData =
+                ctx.getImageData(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+            const pixels =
+                imageData.data;
+
+            for (
+                let i = 0;
+                i < pixels.length;
+                i += 4
+            ) {
+
+                const gray =
+                    (
+                        pixels[i] +
+                        pixels[i + 1] +
+                        pixels[i + 2]
+                    ) / 3;
+
+                const bw =
+                    gray > 128
+                        ? 255
+                        : 0;
+
+                pixels[i] = bw;
+                pixels[i + 1] = bw;
+                pixels[i + 2] = bw;
+            }
+
+            ctx.putImageData(
+                imageData,
+                0,
+                0
+            );
 
             output.value =
                 "Rozpoznávání textu...";
 
-           output.value =
-    "Nahrávám obrázek...";
+            const {
+                data: ocrData
+            } =
+                await Tesseract
+                    .recognize(
+                        canvas,
+                        "ukr",
+                        {
+                            logger:
+                                m => {
 
-const formData =
-    new FormData();
+                                    if (
+                                        m.status ===
+                                        "recognizing text"
+                                    ) {
 
-formData.append(
-    "image",
-    file
-);
+                                        output.value =
+                                            `Rozpoznávání: ${Math.round(
+                                                m.progress *
+                                                100
+                                            )}%`;
+                                    }
+                                }
+                        }
+                    );
 
-const response =
-    await fetch(
-        "https://onerended.onrender.com/ocr",
-        {
-            method: "POST",
-            body: formData
-        }
-    );
+            window.lastOCRText =
+                ocrData.text;
 
-const data =
-    await response.json();
+            let text =
+                applyDictionary(
+                    ocrData.text
+                );
 
-            if (!response.ok) {
-    throw new Error(
-        data.error || "Server error"
-    );
-}
+            output.value =
+                "Kontrola pravopisu...";
 
-if (!data.text) {
-    throw new Error(
-        "Server nevrátil žádný text."
-    );
-}
+            text =
+                await correctText(
+                    text
+                );
 
-let text =
-    data.text;
-
-window.lastOCRText =
-    text;
-
-text =
-    applyDictionary(text);
-
-output.value =
-    "Kontrola pravopisu...";
-
-text =
-    await correctText(text);
-
-text = text
-    .replaceAll("I", "І")
-    .replaceAll("l", "І");
-
-output.value =
-    text;
-
-text = text
-    .replaceAll("I", "І")
-    .replaceAll("l", "І");
-
-output.value =
-    text;
-
-
+            text = text
+                .replaceAll(
+                    "I",
+                    "І"
+                )
+                .replaceAll(
+                    "l",
+                    "І"
+                );
 
             output.value =
                 text;
@@ -226,13 +311,12 @@ output.value =
 learnBtn.addEventListener(
     "click",
     () => {
-            const original =
-        window.lastOCRText;
 
-    const corrected =
-        output.value;
+        const original =
+            window.lastOCRText;
 
-
+        const corrected =
+            output.value;
 
         if (
             !original ||
