@@ -109,6 +109,7 @@ async function correctText(text) {
     }
 }
 
+
 /* ===== OCR ===== */
 
 scanBtn.addEventListener(
@@ -130,65 +131,76 @@ scanBtn.addEventListener(
         try {
 
             output.value =
-                "Příprava obrázku...";
+                "Nahrávám obrázek...";
 
+            const formData =
+                new FormData();
 
-           output.value =
-    "Nahrávám obrázek...";
+            formData.append(
+                "image",
+                file
+            );
 
-const formData =
-    new FormData();
+            const response =
+                await fetch(
+                    "https://onerended.onrender.com/ocr",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
 
-formData.append(
-    "image",
-    file
-);
+            const raw =
+                await response.text();
 
-const response =
-    await fetch(
-        "https://onerended.onrender.com/ocr",
-        {
-            method: "POST",
-            body: formData
-        }
-    );
+            console.log(
+                "SERVER RESPONSE:",
+                raw
+            );
 
-const data =
-    await response.json();
+            let data;
+
+            try {
+                data =
+                    JSON.parse(raw);
+            } catch {
+                data = {
+                    error: raw
+                };
+            }
 
             if (!response.ok) {
-    throw new Error(
-        data.error || "Server error"
-    );
-}
+                throw new Error(
+                    data.error ||
+                    raw ||
+                    "Server error"
+                );
+            }
 
-if (!data.text) {
-    throw new Error(
-        "Server nevrátil žádný text."
-    );
-}
+            if (!data.text) {
+                throw new Error(
+                    "Server nevrátil žádný text."
+                );
+            }
 
-let text =
-    data.text;
+            let text =
+                data.text;
 
-window.lastOCRText =
-    text;
+            window.lastOCRText =
+                text;
 
-text =
-    applyDictionary(text);
+            text =
+                applyDictionary(text);
 
-output.value =
-    "Kontrola pravopisu...";
+            output.value =
+                "Kontrola pravopisu...";
 
-text =
-    await correctText(text);
+            text =
+                await correctText(text);
 
-text = text
-    .replaceAll("I", "І")
-    .replaceAll("l", "І");
-
-
-
+            text = text
+                .replaceAll("I", "І")
+                .replaceAll("l", "І");
 
             output.value =
                 text;
@@ -196,6 +208,7 @@ text = text
         } catch (error) {
 
             console.error(
+                "FULL ERROR:",
                 error
             );
 
@@ -203,12 +216,11 @@ text = text
                 "Chyba při rozpoznávání.";
 
             alert(
-                "OCR selhalo."
+                error.message
             );
         }
     }
 );
-
 /* ===== Učení ===== */
 
 learnBtn.addEventListener(
