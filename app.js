@@ -5,27 +5,6 @@ const scanBtn = document.getElementById("scanBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const learnBtn = document.getElementById("learnBtn");
 
-window.lastOCRText = "";
-
-
-imageInput.addEventListener("change", () => {
-
-    const file = imageInput.files[0];
-
-    if (!file) return;
-
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-
-    document.querySelector(
-        ".upload-title"
-    ).textContent = file.name;
-
-    document.querySelector(
-        ".upload-subtitle"
-    ).textContent =
-        `${Math.round(file.size / 1024)} KB`;
-});
 
 /* ===== Slovník oprav ===== */
 
@@ -132,169 +111,70 @@ async function correctText(text) {
 
 /* ===== OCR ===== */
 
-scanBtn.addEventListener("click", async () => {
-    const file = imageInput.files[0];
-    if (!file) {
-        alert("Nejprve vyberte obrázek.");
-        return;
-    }
+scanBtn.addEventListener(
+    "click",
+    async () => {
 
-    scanBtn.textContent = "Rozpoznávám text...";
-    scanBtn.disabled = true;
+        const file =
+            imageInput.files[0];
 
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-        // Posíláme obrázek na tvůj Node.js backend
-        const response = await fetch("http://localhost:3000/ocr", {
-            method: "POST",
-            body: formData
-        });
-
-        if (!response.ok) throw new Error("Server vrátil chybu");
-
-        const data = await response.json();
-        
-        // Aplikujeme slovník naučených oprav
-        const finalText = applyDictionary(data.text);
-        
-        output.value = finalText;
-        window.lastOCRText = data.text; // Uložíme originál pro učení
-
-    } catch (error) {
-        console.error(error);
-        alert("Chyba při komunikaci se serverem.");
-    } finally {
-        scanBtn.textContent = "розпізнати текст";
-        scanBtn.disabled = false;
-    }
-});
+        if (!file) {
 
             alert(
                 "Vyber fotografii."
             );
+
+            return;
+        }
 
         try {
 
             output.value =
                 "Příprava obrázku...";
 
-            const img =
-                new Image();
-
-            img.src =
-                URL.createObjectURL(
-                    file
-                );
-
-            await new Promise(
-                resolve => {
-                    img.onload =
-                        resolve;
-                }
-            );
-
-            const canvas =
-                document.createElement(
-                    "canvas"
-                );
-
-            const ctx =
-                canvas.getContext(
-                    "2d"
-                );
-
-            canvas.width =
-                img.width * 2;
-
-            canvas.height =
-                img.height * 2;
-
-            ctx.drawImage(
-                img,
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-            const imageData =
-                ctx.getImageData(
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
-
-            const pixels =
-                imageData.data;
-
-            for (
-                let i = 0;
-                i < pixels.length;
-                i += 4
-            ) {
-
-                const gray =
-                    (
-                        pixels[i] +
-                        pixels[i + 1] +
-                        pixels[i + 2]
-                    ) / 3;
-
-                const bw =
-                    gray > 128
-                        ? 255
-                        : 0;
-
-                pixels[i] = bw;
-                pixels[i + 1] = bw;
-                pixels[i + 2] = bw;
-            }
-
-            ctx.putImageData(
-                imageData,
-                0,
-                0
-            );
 
             output.value =
                 "Rozpoznávání textu...";
 
-            const {
-                data: ocrData
-            } =
-                await Tesseract
-                    .recognize(
-                        canvas,
-                        "ukr",
-                        {
-                            logger:
-                                m => {
+           output.value =
+    "Nahrávám obrázek...";
 
-                                    if (
-                                        m.status ===
-                                        "recognizing text"
-                                    ) {
+const formData =
+    new FormData();
 
-                                        output.value =
-                                            `Rozpoznávání: ${Math.round(
-                                                m.progress *
-                                                100
-                                            )}%`;
-                                    }
-                                }
-                        }
-                    );
+formData.append(
+    "image",
+    file
+);
 
-            window.lastOCRText =
-                ocrData.text;
+const response =
+    await fetch(
+        "https://onerended.onrender.com/ocr",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
 
-            let text =
-                applyDictionary(
-                    ocrData.text
-                );
+const data =
+    await response.json();
+
+
+output.value =
+    "Kontrola pravopisu...";
+
+text =
+    await correctText(
+        text
+    );
+
+text = text
+    .replaceAll("I", "І")
+    .replaceAll("l", "І");
+
+output.value =
+    text;
+
 
             output.value =
                 "Kontrola pravopisu...";
@@ -309,6 +189,10 @@ scanBtn.addEventListener("click", async () => {
                     "I",
                     "І"
                 )
+                .replaceAll(
+                    "l",
+                    "І"
+                );
 
             output.value =
                 text;
@@ -334,12 +218,13 @@ scanBtn.addEventListener("click", async () => {
 learnBtn.addEventListener(
     "click",
     () => {
+            const original =
+        window.lastOCRText;
 
-        const original =
-            window.lastOCRText;
+    const corrected =
+        output.value;
 
-        const corrected =
-            output.value;
+
 
         if (
             !original ||
