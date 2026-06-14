@@ -225,8 +225,6 @@ learnBtn.addEventListener(
         output.value;
 
 
-        const corrected =
-            output.value;
 
         if (
             !original ||
