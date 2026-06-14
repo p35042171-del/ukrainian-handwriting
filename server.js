@@ -74,19 +74,16 @@ app.post(
                     response.text
             });
 
-        } catch (error) {
+      } catch (error) {
 
-            console.error(
-                error
-            );
+    console.error("FULL SERVER ERROR:");
+    console.error(error);
 
-            res.status(500)
-                .json({
-                    error:
-                        "OCR failed"
-                });
-        }
-    }
+    res.status(500).json({
+        error: error.message,
+        details: String(error)
+    });
+}
 );
 
 app.listen(
