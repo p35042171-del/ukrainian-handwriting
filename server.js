@@ -1,77 +1,89 @@
-require("dotenv").config();
+import express from "express";
+import multer from "multer";
+import cors from "cors";
+import dotenv from "dotenv";
+import { GoogleGenAI } from "@google/genai";
+import fs from "fs";
 
-const express = require("express");
-const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
-const { OpenAI } = require("openai");
+dotenv.config();
 
 const app = express();
 
-app.use(express.json());
-app.use(express.static("public"));
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+app.use(cors());
 
 const upload = multer({
     dest: "uploads/"
 });
 
-app.post("/api/recognize", upload.single("image"), async (req, res) => {
+const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY
+});
 
-    try {
+app.post(
+    "/ocr",
+    upload.single("image"),
+    async (req, res) => {
 
-        const imagePath = req.file.path;
+        try {
 
-        const base64 = fs.readFileSync(imagePath, {
-            encoding: "base64"
-        });
+            const buffer =
+                fs.readFileSync(
+                    req.file.path
+                );
 
-        const response = await openai.responses.create({
-            model: "gpt-4.1",
-            input: [
-                {
-                    role: "user",
-                    content: [
-                        {
-                            type: "input_text",
-                            text:
-`Přečti ručně psaný text z obrázku.
-
-Pravidla:
-- Přepiš text přesně.
-- Oprav pouze zjevné OCR chyby.
-- Zachovej odstavce.
-- Nevysvětluj.
-- Vrať pouze samotný text.`
-                        },
-                        {
-                            type: "input_image",
-                            image_url: `data:image/jpeg;base64,${base64}`
-                        }
-                    ]
+            const imagePart = {
+                inlineData: {
+                    data:
+                        buffer.toString(
+                            "base64"
+                        ),
+                    mimeType:
+                        req.file.mimetype
                 }
-            ]
-        });
+            };
 
-        fs.unlinkSync(imagePath);
+            const response =
+                await ai.models.generateContent({
+                    model:
+                        "gemini-2.5-flash",
+                    contents: [
+                        imagePart,
+                        `
+ПЕРЕПИШИ текст з фотографії.
 
-        res.json({
-            text: response.output_text
-        });
+Правила:
+- текст українською мовою
+- збережи абзаци
+- виправ очевидні OCR помилки
+- поверни тільки текст
+`
+                    ]
+                });
 
-    } catch (err) {
+            fs.unlinkSync(
+                req.file.path
+            );
 
-        console.error(err);
+            res.json({
+                text:
+                    response.text
+            });
 
-        res.status(500).json({
-            error: "Nepodařilo se rozpoznat text."
-        });
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            res.status(500)
+                .json({
+                    error:
+                        "OCR failed"
+                });
+        }
     }
-});
+);
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server běží na portu ${process.env.PORT}`);
-});
+app.listen(
+    process.env.PORT || 3000
+);
