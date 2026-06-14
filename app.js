@@ -215,32 +215,51 @@ scanBtn.addEventListener(
             output.value =
                 "Rozpoznávání textu...";
 
-            const {
-                data: ocrData
-            } =
-                await Tesseract
-                    .recognize(
-                        canvas,
-                        "ukr",
-                        {
-                            logger:
-                                m => {
+           output.value =
+    "Nahrávám obrázek...";
 
-                                    if (
-                                        m.status ===
-                                        "recognizing text"
-                                    ) {
+const formData =
+    new FormData();
 
-                                        output.value =
-                                            `Rozpoznávání: ${Math.round(
-                                                m.progress *
-                                                100
-                                            )}%`;
-                                    }
-                                }
-                        }
-                    );
+formData.append(
+    "image",
+    file
+);
 
+const response =
+    await fetch(
+        "https://TVUJ-RENDER-URL.onrender.com/ocr",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+const data =
+    await response.json();
+
+window.lastOCRText =
+    data.text;
+
+let text =
+    applyDictionary(
+        data.text
+    );
+
+output.value =
+    "Kontrola pravopisu...";
+
+text =
+    await correctText(
+        text
+    );
+
+text = text
+    .replaceAll("I", "І")
+    .replaceAll("l", "І");
+
+output.value =
+    text;
             window.lastOCRText =
                 ocrData.text;
 
@@ -292,8 +311,6 @@ learnBtn.addEventListener(
     "click",
     () => {
 
-        const original =
-            window.lastOCRText;
 
         const corrected =
             output.value;
