@@ -312,10 +312,6 @@ scanBtn.addEventListener("click", async () => {
                     "I",
                     "І"
                 )
-                .replaceAll(
-                    "l",
-                    "І"
-                );
 
             output.value =
                 text;
