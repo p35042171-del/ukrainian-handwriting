@@ -2,10 +2,14 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Přepis rukopisu</title>
 
 <link rel="stylesheet" href="style.css">
+
+<script src="app.js" defer></script>
+
 </head>
 <body>
 
@@ -13,57 +17,58 @@
 
     <h1>Přepis rukopisu do Wordu</h1>
 
-<div class="upload-wrapper">
+    <div class="upload-section">
 
-    <label for="image" class="upload-box">
+        <label for="image" class="upload-box">
 
-        <div class="upload-icon">
-            📄
-        </div>
+            <div class="upload-icon">📄</div>
 
-        <div class="upload-title">
-            Vyberte fotografii rukopisu
-        </div>
+            <div class="upload-title">
+                Vyberte fotografii rukopisu
+            </div>
 
-        <div class="upload-subtitle">
-            JPG, PNG, HEIC
-        </div>
+            <div class="upload-subtitle">
+                JPG, PNG, JPEG, HEIC
+            </div>
 
-    </label>
+        </label>
 
-    <input
-        type="file"
-        id="image"
-        accept="image/*"
+        <input
+            type="file"
+            id="image"
+            accept="image/*"
+            hidden
+        >
+
+    </div>
+
+    <img
+        id="preview"
+        style="display:none;"
     >
 
-</div>
-
-<img
-    id="preview"
-    alt="Náhled obrázku"
->
-
-<div class="actions">
-
     <button id="scanBtn">
-        ✨ Rozpoznat text
+        Rozpoznat text
     </button>
 
-    <button id="learnBtn">
-        🧠 Uložit opravy
-    </button>
+    <textarea
+        id="output"
+        placeholder="Rozpoznaný text se zobrazí zde..."
+    ></textarea>
 
-    <button id="downloadBtn">
-        📄 Stáhnout Word
-    </button>
+    <div class="buttons">
+
+        <button id="learnBtn">
+            Uložit opravy
+        </button>
+
+        <button id="downloadBtn">
+            Stáhnout Word
+        </button>
+
+    </div>
 
 </div>
-
-<textarea
-    id="output"
-    placeholder="Rozpoznaný text se zobrazí zde..."
-></textarea>
 
 </body>
 </html>
