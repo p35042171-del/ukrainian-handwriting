@@ -55,30 +55,27 @@ h1{
     margin-bottom:30px;
 }
 
-.upload-box::before,
-.upload-box::after {
-    content: none;
-}
 
 
 .upload-box{
-    position:relative;
+    width:100%;
+    min-height:70px;
 
-    overflow: hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
 
-    border:2px dashed #d4d8e5;
+    border:2px dashed rgba(255,255,255,.15);
+    border-radius:15px;
 
-    border-radius:22px;
+    background:rgba(27, 27, 27, 0.225);
 
-    padding:35px;
+    transition:.3s;
 
-    text-align:center;
-
-    transition:.25s;
-
-    cursor:pointer;
-    box-shadow:blue 0px 10px 20px;
+    margin-bottom:20px;
 }
+
 
 
 .upload-box:hover{
