@@ -55,6 +55,12 @@ h1{
     margin-bottom:30px;
 }
 
+.upload-box::before,
+.upload-box::after {
+    content: none;
+}
+
+
 .upload-box{
     position:relative;
 
