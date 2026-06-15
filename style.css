@@ -71,6 +71,7 @@ h1{
     transition:.25s;
 
     cursor:pointer;
+    box-shadow:blue 0px 10px 20px;
 }
 
 
