@@ -68,6 +68,12 @@ h1{
     cursor:pointer;
 }
 
+.wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
 .upload-box:hover{
     border-color:#6f7dff;
     background:#f8f9ff;
