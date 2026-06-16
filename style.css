@@ -101,7 +101,7 @@ h1{
     align-items:center;
     justify-content:center;
 
-    gap:12px;
+    gap:5px;
 
     min-height:150px;
 
@@ -118,7 +118,7 @@ h1{
 
     transition:.3s;
 
-    margin-bottom:25px;
+    margin-bottom:5px;
 }
 
 .upload-box:hover{
