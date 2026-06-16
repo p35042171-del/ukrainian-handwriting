@@ -131,7 +131,7 @@ h1{
 }
 
 .upload-icon{
-    font-size:64px;
+    font-size:16px;
 }
 
 .upload-title{
@@ -203,6 +203,10 @@ h1{
     display:flex;
     gap:15px;
 
+    border-radius:10xp;
+
+    hight:20px;
+    
     margin-bottom:20px;
 }
 
