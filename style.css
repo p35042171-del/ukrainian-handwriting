@@ -103,7 +103,7 @@ h1{
 
     gap:5px;
 
-    min-height:150px;
+    min-height:100px;
 
     border-radius:28px;
 
@@ -218,9 +218,9 @@ h1{
 
     border-radius:18px;
 
-    padding:16px;
+    padding:22px;
 
-    font-size:18px;
+    font-size:22px;
     font-weight:600;
 
     cursor:pointer;
@@ -229,13 +229,11 @@ h1{
 }
 
 #learnBtn{
-
     background:#18181f;
     color:white;
-
     border:1px solid rgba(255,255,255,.08);
-    height:20px;
-    border-radius:5px;
+    border-radius:18px;
+    height:auto;   /* nebo úplně odstranit */
 }
 
 #downloadBtn{
