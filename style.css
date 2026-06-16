@@ -1,103 +1,253 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    <title>Přepis rukopisu</title>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-    <script
-        src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"
-    ></script>
+    background:
+    radial-gradient(circle at top left,#7c8cff 0%,transparent 35%),
+    radial-gradient(circle at top right,#9b7cff 0%,transparent 35%),
+    #f7f9fc;
 
-    <script
-        src="app.js"
-        defer
-    ></script>
-</head>
+    padding:40px;
+}
 
-<body>
+.container{
+    position:relative;
+    
+    width:100%;
+    max-width:900px;
 
-<div class="container">
+    background:rgba(255,255,255,.75);
 
-    <h1>
-        Přepis rukopisu do Wordu
-    </h1>
+    backdrop-filter:blur(18px);
 
-    <!-- Upload -->
+    border:1px solid rgba(255,255,255,.4);
 
-    <label
-        for="image"
-        class="upload-box"
-    >
+    border-radius:28px;
 
-        <div class="upload-icon">
-            📄
-        </div>
+    padding:35px;
 
-        <div class="upload-title">
-            Vyberte fotografii rukopisu
-        </div>
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.08);
+}
 
-        <div class="upload-subtitle">
-            JPG, PNG, JPEG nebo HEIC
-        </div>
+h1{
+    text-align:center;
+    font-size:34px;
+    font-weight:700;
+    margin-bottom:10px;
+    color:#111827;
+}
 
-    </label>
+.subtitle{
+    text-align:center;
+    color:#6b7280;
+    margin-bottom:30px;
+}
 
-    <input
-        type="file"
-        id="image"
-        accept="image/*"
-        hidden
-    >
+.upload-box::before,
+.upload-box::after {
+    content: none;
+}
 
-    <!-- Náhled -->
 
-    <img
-        id="preview"
-        style="
-            display:none;
-            max-width:100%;
-            border-radius:16px;
-            margin-top:20px;
-        "
-    >
+.upload-box{
+    position:relative;
 
-    <!-- Tlačítka -->
+    overflow: hidden;
 
-    <button id="scanBtn">
-        ✨ Rozpoznat text
-    </button>
+    border:2px dashed #d4d8e5;
 
-    <div class="buttons">
+    border-radius:22px;
 
-        <button id="learnBtn">
-            🧠 Uložit opravy
-        </button>
+    padding:35px;
 
-        <button id="downloadBtn">
-            📄 Stáhnout Word
-        </button>
+    text-align:center;
 
-    </div>
+    transition:.25s;
 
-    <!-- Výstup -->
+    cursor:pointer;
+    box-shadow:blue 0px 10px 20px;
+}
 
-    <textarea
-        id="output"
-        placeholder="Rozpoznaný text se zobrazí zde..."
-    ></textarea>
 
-</div>
+.upload-box:hover{
+    border-color:#6f7dff;
+    background:#f8f9ff;
+}
 
-</body>
-</html>
+.upload-icon{
+    font-size:20px;
+    margin-bottom:5px;
+}
+
+.upload-title{
+    font-size:18px;
+    font-weight:600;
+    color:#111827;
+}
+
+.upload-subtitle{
+    color:#6b7280;
+    margin-top:6px;
+}
+
+#image{
+    display:none;
+}
+
+#preview{
+
+    width:100%;
+
+    margin-top:25px;
+
+    border-radius:18px;
+
+    display:none;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.1);
+}
+
+.actions{
+
+    display:flex;
+
+    gap:15px;
+
+    margin-top:25px;
+
+    flex-wrap:wrap;
+}
+
+button{
+
+    border:none;
+
+    cursor:pointer;
+
+    border-radius:16px;
+
+    padding:16px 24px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.25s;
+}
+
+#scanBtn{
+
+    flex:1;
+
+    background:
+    linear-gradient(
+    135deg,
+    #5d7cff,
+    #836fff
+    );
+
+    color:white;
+}
+
+#scanBtn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 10px 25px rgba(93,124,255,.35);
+}
+
+#downloadBtn{
+
+    background:#eef2ff;
+
+    color:#374151;
+}
+
+#downloadBtn:hover{
+    background:#e2e8ff;
+}
+
+#learnBtn{
+
+    background:#f3f4f6;
+
+    color:#374151;
+}
+
+#learnBtn:hover{
+    background:#e5e7eb;
+}
+
+textarea{
+
+    width:100%;
+
+    min-height:300px;
+
+    margin-top:25px;
+
+    border:none;
+
+    outline:none;
+
+    resize:vertical;
+
+    padding:20px;
+
+    font-size:16px;
+
+    border-radius:20px;
+
+    background:#fafbff;
+
+    color:#111827;
+
+    box-shadow:
+    inset 0 0 0 1px #e5e7eb;
+}
+
+textarea:focus{
+
+    box-shadow:
+    inset 0 0 0 2px #6f7dff;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#9ca3af;
+    font-size:13px;
+}
+
+@media(max-width:700px){
+
+    .container{
+        padding:20px;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+    button{
+        width:100%;
+    }
+
+    h1{
+        font-size:28px;
+    }
+}
