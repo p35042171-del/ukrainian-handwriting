@@ -201,13 +201,11 @@ h1{
 .buttons{
 
     display:flex;
-    gap:15px;
+    gap:25px;
 
     border-radius:10xp;
-
-    height:20px;
     
-    margin-bottom:20px;
+    margin-bottom:30px;
 }
 
 .buttons button{
