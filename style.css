@@ -8,6 +8,7 @@
     cursor:pointer;
     position:relative;
     z-index:10;
+    height:200px;
 }
 
 body{
