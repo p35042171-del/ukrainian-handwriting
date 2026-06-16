@@ -13,53 +13,23 @@
 
     <h1>Přepis rukopisu do Wordu</h1>
 
-<div class="upload-wrapper">
+    <input type="file" id="image" accept="image/*">
 
-    
-
-    <label for="image" class="upload-box">
-
-        <div class="upload-icon">
-            📄
-        </div>
-
-        <div class="upload-title">
-            Vyberte fotografii rukopisu
-        </div>
-
-        <div class="upload-subtitle">
-            JPG, PNG, HEIC
-        </div>
-
-    </label>
-
-</div>
-
-<img
-    id="preview"
-    alt="Náhled obrázku"
->
-
-<div class="actions">
+    <img id="preview">
 
     <button id="scanBtn">
-        ✨ Rozpoznat text
+        Rozpoznat text
     </button>
 
-    <button id="learnBtn">
-        🧠 Uložit opravy
-    </button>
+    <textarea id="output"></textarea>
+
+<button id="learnBtn">
+    Uložit opravy
+</button>
 
     <button id="downloadBtn">
-        📄 Stáhnout Word
+        Stáhnout Word
     </button>
-
-</div>
-
-<textarea
-    id="output"
-    placeholder="Rozpoznaný text se zobrazí zde..."
-></textarea>
 
 </div>
 
