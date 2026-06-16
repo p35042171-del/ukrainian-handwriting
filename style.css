@@ -231,10 +231,11 @@ h1{
     color:white;
     border:1px solid rgba(255,255,255,.08);
     border-radius:18px;
-    height:auto;   /* nebo úplně odstranit */
+    height:50px
 }
 
 #downloadBtn{
+    height:50px
 
     background:
     linear-gradient(
