@@ -226,7 +226,7 @@ h1{
     transition:2.5s;
 }
 
-.learnBtn{
+#learnBtn{
     width:30%;
 
     border:none;
@@ -255,7 +255,7 @@ h1{
 }
 
 
-.downloadBtn{
+#downloadBtn{
     width:30%;
 
     border:none;
