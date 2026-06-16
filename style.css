@@ -1,213 +1,103 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-body{
-    font-family: Inter, Segoe UI, sans-serif;
-    min-height:100vh;
-    background:
-        radial-gradient(circle at top left,#2563eb 0%,transparent 30%),
-        radial-gradient(circle at bottom right,#7c3aed 0%,transparent 30%),
-        #0f172a;
+    <title>Přepis rukopisu</title>
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:30px;
-}
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
-.container{
-    width:100%;
-    max-width:1000px;
+    <script
+        src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"
+    ></script>
 
-    background:rgba(255,255,255,0.08);
+    <script
+        src="app.js"
+        defer
+    ></script>
+</head>
 
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
+<body>
 
-    border:1px solid rgba(255,255,255,0.15);
+<div class="container">
 
-    border-radius:28px;
+    <h1>
+        Přepis rukopisu do Wordu
+    </h1>
 
-    padding:35px;
+    <!-- Upload -->
 
-    box-shadow:
-        0 20px 60px rgba(0,0,0,.35);
-}
+    <label
+        for="image"
+        class="upload-box"
+    >
 
-h1{
-    color:white;
-    font-size:32px;
-    text-align:center;
-    margin-bottom:10px;
-}
+        <div class="upload-icon">
+            📄
+        </div>
 
-.subtitle{
-    color:#94a3b8;
-    text-align:center;
-    margin-bottom:30px;
-}
+        <div class="upload-title">
+            Vyberte fotografii rukopisu
+        </div>
 
-input[type=file]{
-    width:100%;
-    padding:25px;
-    border:2px dashed rgba(255,255,255,.2);
-    border-radius:20px;
-    background:rgba(255,255,255,.04);
-    color:white;
-    margin-bottom:25px;
-}
+        <div class="upload-subtitle">
+            JPG, PNG, JPEG nebo HEIC
+        </div>
 
-input[type=file]:hover{
-    border-color:#60a5fa;
-}
+    </label>
 
-#preview{
-    width:100%;
-    max-height:500px;
-    object-fit:contain;
+    <input
+        type="file"
+        id="image"
+        accept="image/*"
+        hidden
+    >
 
-    border-radius:20px;
+    <!-- Náhled -->
 
-    display:none;
+    <img
+        id="preview"
+        style="
+            display:none;
+            max-width:100%;
+            border-radius:16px;
+            margin-top:20px;
+        "
+    >
 
-    margin-bottom:25px;
+    <!-- Tlačítka -->
 
-    border:1px solid rgba(255,255,255,.1);
-}
+    <button id="scanBtn">
+        ✨ Rozpoznat text
+    </button>
 
-textarea{
-    width:100%;
-    min-height:350px;
+    <div class="buttons">
 
-    background:rgba(255,255,255,.05);
+        <button id="learnBtn">
+            🧠 Uložit opravy
+        </button>
 
-    color:white;
+        <button id="downloadBtn">
+            📄 Stáhnout Word
+        </button>
 
-    border:none;
+    </div>
 
-    border-radius:20px;
+    <!-- Výstup -->
 
-    padding:20px;
+    <textarea
+        id="output"
+        placeholder="Rozpoznaný text se zobrazí zde..."
+    ></textarea>
 
-    font-size:16px;
+</div>
 
-    outline:none;
-
-    margin-bottom:25px;
-}
-
-textarea::placeholder{
-    color:#94a3b8;
-}
-
-.buttons{
-    display:flex;
-    gap:15px;
-    flex-wrap:wrap;
-}
-
-button{
-    flex:1;
-
-    border:none;
-
-    border-radius:16px;
-
-    padding:16px 22px;
-
-    font-size:16px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.25s;
-}
-
-button:hover{
-    transform:translateY(-3px);
-}
-
-#scanBtn{
-    width:100%;
-    margin-bottom:20px;
-
-    background:linear-gradient(
-        135deg,
-        #2563eb,
-        #3b82f6
-    );
-
-    color:white;
-    padding:18px;
-
-    border:none;
-    border-radius:16px;
-
-    font-size:18px;
-    font-weight:700;
-}
-
-
-#learnBtn{
-    background:linear-gradient(
-        135deg,
-        #7c3aed,
-        #8b5cf6
-    );
-    color:white;
-}
-
-#downloadBtn{
-    background:linear-gradient(
-        135deg,
-        #10b981,
-        #34d399
-    );
-    color:white;
-}
-
-.status{
-    margin-top:15px;
-    color:#cbd5e1;
-    text-align:center;
-}
-
-.upload-box{
-    width:100%;
-    min-height:70px;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-
-    border:2px dashed rgba(255,255,255,.15);
-    border-radius:15px;
-
-    background:rgba(27, 27, 27, 0.225);
-
-    transition:.3s;
-
-    margin-bottom:20px;
-}
-
-.upload-box:hover{
-    border-color:#3b82f6;
-    background:rgba(59,130,246,.08);
-}
-
-
-.upload-title{
-    font-size:24px;
-    color:white;
-    font-weight:700;
-}
-
-.upload-subtitle{
-    color:#94a3b8;
-    margin-top:8px;
-}
+</body>
+</html>
